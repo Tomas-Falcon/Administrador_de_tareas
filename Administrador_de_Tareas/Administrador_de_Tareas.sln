@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Administrador_de_Tareas", "Administrador_de_Tareas\Administrador_de_Tareas\Administrador_de_Tareas.csproj", "{E2499712-171D-422D-B74A-0F0EC5DB9B81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Administrador_de_Tareas", "Administrador_de_Tareas\Administrador_de_Tareas\Administrador_de_Tareas.csproj", "{E2499712-171D-422D-B74A-0F0EC5DB9B81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Administrador_de_Tareas.Client", "Administrador_de_Tareas\Administrador_de_Tareas.Client\Administrador_de_Tareas.Client.csproj", "{B4533AE1-F762-48D4-AA52-67209AAA499A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Administrador_de_Tareas.Client", "Administrador_de_Tareas\Administrador_de_Tareas.Client\Administrador_de_Tareas.Client.csproj", "{B4533AE1-F762-48D4-AA52-67209AAA499A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

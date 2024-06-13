@@ -1,39 +1,11 @@
 ﻿@page "/"
 
-@inject IRepository _todoRepository
-@using Administrador_de_Tareas.Models
-@using Administrador_de_Tareas.Repository
+
 @rendermode InteractiveServer
 
 <h3>Tasks</h3>
 
-<button class="btn btn-primary" @onclick="DeleteSelectedTasks">Delete Selected Tasks</button>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th></th> <!-- Column for the checkbox -->
-            <th>Title</th>
-            <th>Description</th>
-            <th>Paused</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var task in tasks)
-        {
-            <tr>
-                <td><input type="checkbox" @onchange="@(e => ChangeSelection(task, e))" /></td>
-                <td>@task.Title</td>
-                <td>@task.Description</td>
-                <td>@(task.IsPaused ? "Yes" : "No")</td>
-                <td>@task.TODOStates.ToString()</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<h3>Add New Task</h3>
+<button class="btn btn-primary" @onclick="DeleteSelectedTasks">Borrar tareas selecionadas</button>
 
 <form @onsubmit="AddTask">
     <div>
@@ -47,71 +19,33 @@
     <button class="btn btn-primary" type="submit">Add Task</button>
 </form>
 
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Bloqueado</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in tasks)
+        {
+            <tr>
+                <td><input type="checkbox" @onchange="@(e => ChangeSelection(task, e))" /></td>
+                <td>@task.Title</td>
+                <td>@task.Description</td>
+                <td><button class="btn btn-primary" @onclick="@(e=> ChangePause(task))">@(task.IsBlocked ? "Si" : "No")</button></td>
+                <td>
+                    <button class="btn btn-primary" @onclick="@(e=> ChangeState(task))">@task.TODOStates.ToString()</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
 <button class="btn btn-primary"  @onclick="NavigateToPreviousPage" disabled="@IsFirstPage">Previous Page</button>
 <button class="btn btn-primary"  @onclick="NavigateToNextPage" disabled="@IsLastPage">Next Page</button>
 
-@code {
-    private List<Todo> tasks = new List<Todo>();
-    private List<Todo> selectedTasks = new List<Todo>();
-    private Todo newTask = new Todo();
-    private int pageNumber = 0; // Start from page 0
-    private int pageSize = 10; // Number of items per page
-    private bool IsFirstPage => pageNumber == 0; // Check if it's the first page
-    private bool IsLastPage => tasks.Count < pageSize; // Check if it's the last page
-
-    protected override async Task OnInitializedAsync()
-    {
-        // Load data from the database based on the page number
-        tasks = await _todoRepository.Get(pageNumber);
-    }
-
-    private void ChangeSelection(Todo task, ChangeEventArgs e)
-    {
-        if ((bool)e.Value)
-        {
-            selectedTasks.Add(task);
-        }
-        else
-        {
-            selectedTasks.Remove(task);
-        }
-    }
-
-    private async Task DeleteSelectedTasks()
-    {
-        foreach (Todo task in selectedTasks)
-        {
-            _todoRepository.Delete(task);
-            tasks.Remove(task);
-        }
-
-        selectedTasks.Clear();
-
-        StateHasChanged();
-    }
-
-    // Method to add a new task
-    private async Task AddTask()
-    {
-        _todoRepository.Insert(newTask);
-        tasks.Add(newTask);
-        newTask = new Todo();
-    }
-
-    // Method to handle navigation to the next page
-    private async Task NavigateToNextPage()
-    {
-        pageNumber++;
-        tasks = await _todoRepository.Get(pageNumber);
-    }
-
-    // Method to handle navigation to the previous page
-    private async Task NavigateToPreviousPage()
-    {
-        if (pageNumber > 0)
-        {
-            pageNumber--;
-            tasks = await _todoRepository.Get(pageNumber);
-        }
-    }
-}

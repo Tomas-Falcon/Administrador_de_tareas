@@ -1,9 +1,10 @@
-﻿using Administrador_de_Tareas.Infraestructure;
+﻿using Administrador_de_Tareas.DTOs;
+using Administrador_de_Tareas.Infraestructure;
 using Administrador_de_Tareas.Models;
 
 namespace Administrador_de_Tareas.Repository
 {
-    public class TODORepository : IRepository
+    public class TODORepository : IRepository<TodoDTO>
     {
         private readonly TODOListDbContext _dbContext;
         public TODORepository(TODOListDbContext context)
@@ -11,27 +12,33 @@ namespace Administrador_de_Tareas.Repository
             _dbContext = context;
         }
 
-        public void Delete(Todo model)
+        public void Delete(TodoDTO model)
         {
-            _dbContext.TodoSet.Remove(model);
+            _dbContext.TodoSet.Remove(TodoDTO.MapToEntity(model));
             _dbContext.SaveChanges();
         }
 
-        public void Insert(Todo model)
+        public void Delete(IEnumerable<TodoDTO> model)
         {
-            _dbContext.TodoSet.Add(model);
+            _dbContext.TodoSet.RemoveRange(model.Select(x => TodoDTO.MapToEntity(x)));
             _dbContext.SaveChanges();
         }
 
-        public void Update(Todo model)
+        public void Insert(TodoDTO model)
         {
-            _dbContext.TodoSet.Update(model);
+            _dbContext.TodoSet.Add(TodoDTO.MapToEntity(model));
             _dbContext.SaveChanges();
         }
 
-        public async Task<List<Todo>> Get(int page)
+        public void Update(TodoDTO model)
         {
-          return _dbContext.TodoSet.Skip(page*10).Take(10).ToList();
+            _dbContext.TodoSet.Update(TodoDTO.MapToEntity(model));
+            _dbContext.SaveChanges();
+        }
+
+        public async Task<IEnumerable<TodoDTO>> Get(int page)
+        {
+          return _dbContext.TodoSet.Skip(page*10).Take(10).Select(s => TodoDTO.MapFromEntity(s));
         }
     }
 }

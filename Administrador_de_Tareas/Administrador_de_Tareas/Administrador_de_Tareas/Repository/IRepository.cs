@@ -2,12 +2,13 @@
 
 namespace Administrador_de_Tareas.Repository
 {
-    public interface IRepository
+    public interface IRepository<TItem>
     {
-        public void Insert(Todo model);
-        public void Update(Todo model);
-        public void Delete(Todo model);
-        public Task<List<Todo>> Get(int a);
+        public void Insert(TItem model);
+        public void Update(TItem model);
+        public void Delete(TItem model);
+        public void Delete(IEnumerable<TItem> model);
+        public Task<IEnumerable<TItem>> Get(int a);
 
 
     }
