@@ -1,7 +1,7 @@
-using Administrador_de_Tareas.Client.Pages;
 using Administrador_de_Tareas.Components;
+using Administrador_de_Tareas.Client.Pages;
+using Administrador_de_Tareas.DTOs;
 using Administrador_de_Tareas.Infraestructure;
-using Administrador_de_Tareas.Models;
 using Administrador_de_Tareas.Repository;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +17,7 @@ namespace Administrador_de_Tareas
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
-            builder.Services.AddScoped<IRepository<Todo>, TODORepository>();
+            builder.Services.AddScoped<IRepository<TodoDTO>, TODORepository>();
 
             string database = builder.Configuration.GetConnectionString("ConectionDB")!;
 

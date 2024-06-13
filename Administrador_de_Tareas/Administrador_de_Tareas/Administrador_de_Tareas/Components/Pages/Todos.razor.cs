@@ -1,7 +1,7 @@
 ﻿using Administrador_de_Tareas.DTOs;
-using Administrador_de_Tareas.Models;
 using Administrador_de_Tareas.Repository;
 using Microsoft.AspNetCore.Components;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Administrador_de_Tareas.Components.Pages
 {
@@ -10,52 +10,62 @@ namespace Administrador_de_Tareas.Components.Pages
         [Inject] private IRepository<TodoDTO> TodoRepository { get; set; }
 
         private List<TodoDTO> tasks = new List<TodoDTO>();
-        private List<TodoDTO> selectedTasks = new List<TodoDTO>();
         private TodoDTO newTask = new TodoDTO();
         private int pageNumber = 0;
         private int pageSize = 10;
         private bool IsFirstPage => pageNumber == 0;
         private bool IsLastPage => tasks.Count < pageSize;
+        private string errorMessage = "";
+        private string clase = "";
+
 
         protected override async Task OnInitializedAsync()
         {
-            tasks = (await TodoRepository.Get(pageNumber)).ToList();
+            RefreshTaskList();
         }
 
-        private void ChangeSelection(TodoDTO task, ChangeEventArgs e)
+        private async void RefreshTaskList()
         {
-            if ((bool)e.Value)
-            {
-                selectedTasks.Add(task);
-            }
-            else
-            {
-                selectedTasks.Remove(task);
-            }
+            tasks = (await TodoRepository.Get(pageNumber)).ToList();
+
         }
 
         private async Task DeleteSelectedTasks()
         {
-            TodoDTO task = new TodoDTO();
-            TodoRepository.Delete(task);
-            tasks.Remove(task);
+            TodoRepository.Delete(tasks.Where(w => w.IsSelected == true));
+            RefreshTaskList();
+            StateHasChanged();
+        }
 
-            selectedTasks.Clear();
+        private void Remove(TodoDTO todo)
+        {
+            TodoRepository.Delete(todo);
 
+            RefreshTaskList();
             StateHasChanged();
         }
 
         private async Task AddTask()
         {
+            if (newTask.Title.IsNullOrEmpty() || newTask.Description.IsNullOrEmpty())
+            {
+                errorMessage = "*Es necesario poner un titulo o una descripcion para crear la tarea";
+                clase = "alert alert-danger";
+                return;
+            }
+            errorMessage = "";
+            clase = "";
             TodoRepository.Insert(newTask);
             tasks.Add(newTask);
             newTask = new TodoDTO();
+            StateHasChanged();
         }
 
+        
         private async Task NavigateToNextPage()
         {
             pageNumber++;
-            tasks = (await TodoRepository.Get(pageNumber)).ToList();
+            RefreshTaskList();
         }
 
         private async Task NavigateToPreviousPage()
@@ -63,7 +73,7 @@ namespace Administrador_de_Tareas.Components.Pages
             if (pageNumber > 0)
             {
                 pageNumber--;
-                tasks = (await TodoRepository.Get(pageNumber)).ToList();
+                RefreshTaskList();
             }
         }
 
@@ -85,6 +95,11 @@ namespace Administrador_de_Tareas.Components.Pages
         private void SaveChange(TodoDTO todo)
         {
             TodoRepository.Update(todo);
+        }
+        private async void AutoGenerateTasks()
+        {
+            TodoRepository.AutoInsert(100000);
+            RefreshTaskList();
         }
     }
 }

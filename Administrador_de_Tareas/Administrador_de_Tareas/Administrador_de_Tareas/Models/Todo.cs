@@ -10,7 +10,8 @@ namespace Administrador_de_Tareas.Models
         public string Title { get; set; }
         public bool IsBlocked { get; set; } = false;
         public States TODOStates { get; set; } = States.PLANED;
+        public DateTime CreateDate { get; set; } = DateTime.Now;
 
-       
+
     }
 }
